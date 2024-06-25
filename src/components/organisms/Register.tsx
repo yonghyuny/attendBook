@@ -3,7 +3,7 @@ import RegisterForm from "../molecules/RegisterForm";
 
 const Register = () => (
   <div>
-    <h1>회원가입</h1>
+    <h1>학생등록</h1>
     <RegisterForm />
   </div>
 );

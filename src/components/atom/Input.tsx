@@ -1,18 +1,13 @@
 import React from "react";
 
-type InputFieldProps = {
+type InputProps = {
   type: string;
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const InputField = ({
-  type,
-  placeholder,
-  value,
-  onChange,
-}: InputFieldProps) => (
+const Input = ({ type, placeholder, value, onChange }: InputProps) => (
   <input
     type={type}
     placeholder={placeholder}
@@ -21,4 +16,4 @@ const InputField = ({
   />
 );
 
-export default InputField;
+export default Input;

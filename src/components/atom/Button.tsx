@@ -1,7 +1,8 @@
 import React from "react";
+import { NavigateFunction } from "react-router-dom";
 
 type ButtonProps = {
-  onClick: () => void;
+  onClick?: () => void;
   children: React.ReactNode;
 };
 
