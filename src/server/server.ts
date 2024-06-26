@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "qwer1234",
-  database: "reactspring",
+  password: "1234",
+  database: "mydatabase",
   timezone: "Z", // 'Z'는 UTC 시간대를 의미
 });
 
@@ -67,7 +67,7 @@ app.post("/register", (req, res) => {
 
   const queryStudent = "INSERT INTO students (studentName) VALUES (?)";
   const queryClassStudents =
-    "INSERT INTO class_students (classNum, studentNum) VALUES (?, LAST_INSERT_ID())";
+    "INSERT INTO classStudents (classNum, studentNum) VALUES (?, LAST_INSERT_ID())";
 
   connection.query(queryStudent, [studentNum], (err, result) => {
     if (err) {
@@ -86,13 +86,14 @@ app.post("/register", (req, res) => {
   });
 });
 
-// 출결 정보 가져오기
+// DATE_FORMAT을 사용해서 날짜형식 지정
+// 출결 데이터 가져오기 (선택된 날짜 필터링)
 app.get("/attendancecheck", (req, res) => {
-  // DATE_FORMAT을 사용해서 서버와 클라이언트간의 시간을 맞춰야한다.
-  const query = `
+  const { date } = req.query;
+  let query = `
       SELECT 
           s.studentName,
-          DATE_FORMAT(c.date, '%Y-%m-%d') as date,   
+          DATE_FORMAT(jc.date, '%Y-%m-%d') as date,
           a.status,
           cl.className
       FROM 
@@ -100,16 +101,35 @@ app.get("/attendancecheck", (req, res) => {
       JOIN 
           students s ON a.studentNum = s.studentNum
       JOIN 
-          july_calendar c ON a.date_id = c.date_id
+          julyCalendar jc ON a.dateId = jc.dateId
       JOIN 
-          class_students cs ON s.studentNum = cs.studentNum
+          classStudents cs ON s.studentNum = cs.studentNum
       JOIN 
           class cl ON cs.classNum = cl.classNum
   `;
+
+  if (date) {
+    query += ` WHERE jc.date = '${date}'`;
+  }
+
   connection.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching attendance data:", err);
       res.status(500).send("Error fetching attendance data.");
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// 날짜 목록 가져오기
+app.get("/dates", (req, res) => {
+  const query =
+    "SELECT dateId, DATE_FORMAT(date, '%Y-%m-%d') as date FROM julyCalendar";
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching dates:", err);
+      res.status(500).send("Error fetching dates.");
       return;
     }
     res.json(results);

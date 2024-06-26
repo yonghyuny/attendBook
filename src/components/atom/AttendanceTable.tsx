@@ -1,52 +1,40 @@
-import React, { CSSProperties, useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 
-interface Attendance {
+export interface Attendance {
   studentName: string;
   date: string;
   status: string;
   className: string;
 }
 
-const fetchAttendance = async (): Promise<Attendance[]> => {
-  const response = await axios.get("http://localhost:3001/attendancecheck");
-  return response.data;
-};
+interface AttendanceTableProps {
+  attendanceData: Attendance[];
+}
 
-const AttendanceTable = () => {
-  const [attendanceData, setAttendanceData] = useState<Attendance[]>([]);
-
-  useEffect(() => {
-    const getData = async () => {
-      const data = await fetchAttendance();
-      setAttendanceData(data);
-    };
-    getData();
-  }, []);
-
-  const tableStyle: CSSProperties = {
+const AttendanceTable: React.FC<AttendanceTableProps> = ({
+  attendanceData,
+}) => {
+  const tableStyle: React.CSSProperties = {
     maxWidth: "1200px",
     width: "100%",
     margin: "0 auto",
   };
-  const attendTableStyle: CSSProperties = {
+
+  const attendTableStyle: React.CSSProperties = {
     maxWidth: "1200px",
     width: "100%",
     margin: "0 auto",
     border: "1px solid black",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
   };
 
-  const attendContentStyle: CSSProperties = {
-    width: "400px",
-    borderRight: "1px solid black",
+  const attendContentStyle: React.CSSProperties = {
+    border: "1px solid black",
     textAlign: "center",
+    padding: "8px",
   };
+
   return (
     <table style={tableStyle}>
-      ///
       <thead>
         <tr style={attendTableStyle}>
           <th style={attendContentStyle}>날짜</th>
@@ -58,9 +46,7 @@ const AttendanceTable = () => {
       <tbody>
         {attendanceData.map((record, index) => (
           <tr key={index} style={attendTableStyle}>
-            <td style={attendContentStyle}>
-              {record.date.replace(/T.*$/, "")}
-            </td>
+            <td style={attendContentStyle}>{record.date}</td>
             <td style={attendContentStyle}>{record.className}</td>
             <td style={attendContentStyle}>{record.studentName}</td>
             <td style={attendContentStyle}>{record.status}</td>
