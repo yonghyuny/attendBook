@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
-  database: "mydatabase",
+  password: "qwer1234",
+  database: "reactspring",
   timezone: "Z", // 'Z'는 UTC 시간대를 의미
 });
 

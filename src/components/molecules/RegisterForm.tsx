@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import axios from "axios";
 import Input from "../atom/Input";
 import { useNavigate } from "react-router-dom";
@@ -52,24 +52,59 @@ const RegisterForm = () => {
     }
   };
 
+  const optionStyle: CSSProperties = {
+    height: "45px",
+    width: "100px",
+    fontSize: "15px",
+    textAlign: "center",
+  };
+
+  const mainStyle: CSSProperties = {
+    display: "flex",
+    gap: "10px",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  const btnStyle: CSSProperties = {
+    display: "flex",
+    gap: "10px",
+  };
+
+  const inputStyle: CSSProperties = {
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
   return (
-    <div>
-      <select value={classNum} onChange={handleClassChange}>
-        <option value="">반 선택</option>
-        {classes.map((cls) => (
-          <option key={cls.classNum} value={cls.classNum}>
-            {cls.className}
-          </option>
-        ))}
-      </select>
-      <Input
-        type="text"
-        placeholder="학생 이름"
-        value={studentNum}
-        onChange={(e) => setStudentNum(e.target.value)}
-      />
-      <Button onClick={handleSubmit}>등록</Button>
-      <Button onClick={MainNavBtn}>돌아가기</Button>
+    <div style={mainStyle}>
+      <div style={inputStyle}>
+        <select
+          style={optionStyle}
+          value={classNum}
+          onChange={handleClassChange}
+        >
+          <option value="">반 선택</option>
+          {classes.map((cls) => (
+            <option key={cls.classNum} value={cls.classNum}>
+              {cls.className}
+            </option>
+          ))}
+        </select>
+        <Input
+          type="text"
+          placeholder="학생 이름"
+          value={studentNum}
+          onChange={(e) => setStudentNum(e.target.value)}
+        />
+      </div>
+      <div style={btnStyle}>
+        <Button onClick={handleSubmit}>등록</Button>
+        <Button onClick={MainNavBtn}>돌아가기</Button>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Input from "../atom/Input";
@@ -16,7 +16,7 @@ const LoginForm = () => {
         pwd,
       });
       if (response.data === "로그인 성공") {
-        navigate("/mainpage"); // 로그인 성공 시 '/main' 페이지로 리디렉션
+        navigate("/mainpage"); // 로그인 성공 시 '/main' 페이지로 이동
       } else {
         alert("로그인 실패 ");
       }
@@ -25,21 +25,44 @@ const LoginForm = () => {
     }
   };
 
+  const inputStyle: CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: "20px",
+  };
+  const btnStyle: CSSProperties = {
+    display: "flex",
+    justifyContent: "center",
+    margin: "20px",
+  };
+
   return (
     <div>
-      <Input
-        type="text"
-        placeholder="Username"
-        value={id}
-        onChange={(e) => setId(e.target.value)}
-      />
-      <Input
-        type="password"
-        placeholder="Password"
-        value={pwd}
-        onChange={(e) => setPwd(e.target.value)}
-      />
-      <Button onClick={handleLogin}>Sign In</Button>
+      <div>
+        <div style={inputStyle}>
+          <Input
+            type="text"
+            placeholder="아이디"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+          />
+        </div>
+
+        <div style={inputStyle}>
+          <Input
+            type="password"
+            placeholder="비밀번호"
+            value={pwd}
+            onChange={(e) => setPwd(e.target.value)}
+          />
+        </div>
+      </div>
+      <div style={btnStyle}>
+        <Button onClick={handleLogin}>Sign In</Button>
+      </div>
     </div>
   );
 };
