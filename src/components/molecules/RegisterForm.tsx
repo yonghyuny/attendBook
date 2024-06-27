@@ -3,16 +3,14 @@ import axios from "axios";
 import Input from "../atom/Input";
 import { useNavigate } from "react-router-dom";
 import Button from "../atom/Button";
-
-interface Class {
-  classNum: number;
-  className: string;
-}
+import Select from "../atom/Select";
+import { ClassOption } from "../organisms/AttendanceCheck";
 
 const RegisterForm = () => {
   const [studentNum, setStudentNum] = useState<string>("");
   const [classNum, setClassNum] = useState<string>("");
-  const [classes, setClasses] = useState<Class[]>([]);
+
+  const [classes, setClasses] = useState<ClassOption[]>([]);
   const MainNav = useNavigate();
 
   const MainNavBtn = () => {
@@ -22,9 +20,9 @@ const RegisterForm = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await axios.get<Class[]>(
+        const response = await axios.get<ClassOption[]>(
           "http://localhost:3001/classes"
-        ); // URL 수정
+        );
         setClasses(response.data);
       } catch (error) {
         console.error("반 정보를 불러오는 데 실패했습니다.", error);
@@ -82,18 +80,15 @@ const RegisterForm = () => {
   return (
     <div style={mainStyle}>
       <div style={inputStyle}>
-        <select
-          style={optionStyle}
-          value={classNum}
+        <Select
+          options={classes.map((cls) => ({
+            id: cls.classNum,
+            value: cls.classNum,
+            text: cls.className,
+          }))}
           onChange={handleClassChange}
-        >
-          <option value="">반 선택</option>
-          {classes.map((cls) => (
-            <option key={cls.classNum} value={cls.classNum}>
-              {cls.className}
-            </option>
-          ))}
-        </select>
+          defaultOption="수업 선택"
+        />
         <Input
           type="text"
           placeholder="학생 이름"

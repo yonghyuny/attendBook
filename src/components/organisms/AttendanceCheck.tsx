@@ -1,16 +1,33 @@
 import React, { useState, useEffect, CSSProperties } from "react";
 import axios from "axios";
 import AttendanceTable, { Attendance } from "../atom/AttendanceTable";
+import SelectComponent from "../atom/Select";
+import Select from "../atom/Select";
 
-interface DateOption {
+type DateOption = {
   dateId: number;
   date: string;
-}
+};
 
-const AttendanceCheck: React.FC = () => {
+export type ClassOption = {
+  classNum: number;
+  className: string;
+};
+
+const AttendanceCheck = () => {
   const [dates, setDates] = useState<DateOption[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const [classes, setClasses] = useState<ClassOption[]>([]);
+  const [selectedClass, setSelectedClass] = useState<number | null>(null);
   const [attendanceData, setAttendanceData] = useState<Attendance[]>([]);
+
+  //
+  const [classNum, setClassNum] = useState<string>("");
+  const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setClassNum(event.target.value);
+  };
+  //
 
   useEffect(() => {
     const fetchDates = async () => {
@@ -21,16 +38,24 @@ const AttendanceCheck: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedDate) {
+    const fetchClasses = async () => {
+      const response = await axios.get("http://localhost:3001/classes");
+      setClasses(response.data);
+    };
+    fetchClasses();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate && selectedClass) {
       const fetchAttendance = async () => {
         const response = await axios.get(
-          `http://localhost:3001/attendancecheck?date=${selectedDate}`
+          `http://localhost:3001/attendancecheck?date=${selectedDate}&classNum=${selectedClass}`
         );
         setAttendanceData(response.data);
       };
       fetchAttendance();
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedClass]);
 
   const divStyle: CSSProperties = {
     maxWidth: "1200px",
@@ -50,19 +75,28 @@ const AttendanceCheck: React.FC = () => {
   return (
     <div style={divStyle}>
       <h1 style={h1Style}>출결 확인</h1>
-      <select
-        style={selectStyle}
+      <Select
+        options={dates.map((date) => ({
+          id: date.dateId,
+          value: date.date,
+          text: date.date,
+        }))}
         onChange={(e) => setSelectedDate(e.target.value)}
-        defaultValue=""
-      >
-        <option value="">날짜 선택</option>
-        {dates.map((date) => (
-          <option key={date.dateId} value={date.date}>
-            {date.date}
-          </option>
-        ))}
-      </select>
-      {selectedDate && <AttendanceTable attendanceData={attendanceData} />}
+        defaultOption="날짜 선택"
+      />
+
+      <Select
+        options={classes.map((cls) => ({
+          id: cls.classNum,
+          value: cls.classNum,
+          text: cls.className,
+        }))}
+        onChange={handleClassChange}
+        defaultOption="수업 선택"
+      />
+      {selectedDate && classNum && (
+        <AttendanceTable attendanceData={attendanceData} />
+      )}
     </div>
   );
 };
