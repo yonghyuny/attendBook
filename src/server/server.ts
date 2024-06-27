@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
-  database: "mydatabase",
+  password: "qwer1234",
+  database: "reactspring",
   timezone: "Z", // 'Z'는 UTC 시간대를 의미
 });
 
@@ -89,13 +89,14 @@ app.post("/register", (req, res) => {
 // DATE_FORMAT을 사용해서 날짜형식 지정
 // 출결 데이터 가져오기 (선택된 날짜 필터링)
 app.get("/attendancecheck", (req, res) => {
-  const { date } = req.query;
+  const { date, classNum } = req.query;
   let query = `
       SELECT 
           s.studentName,
           DATE_FORMAT(jc.date, '%Y-%m-%d') as date,
           a.status,
-          cl.className
+          cl.className,
+          cl.classNum
       FROM 
           attendance a
       JOIN 
@@ -106,11 +107,22 @@ app.get("/attendancecheck", (req, res) => {
           classStudents cs ON s.studentNum = cs.studentNum
       JOIN 
           class cl ON cs.classNum = cl.classNum
+          
   `;
-
+  const conditions = [];
   if (date) {
-    query += ` WHERE jc.date = '${date}'`;
+    conditions.push(`jc.date = '${date}'`);
   }
+  if (classNum) {
+    conditions.push(`cl.classNum = '${classNum}'`);
+  }
+
+  if (conditions.length > 0) {
+    query += ` WHERE ` + conditions.join(" AND ");
+  }
+
+  // 로그에 쿼리를 출력하여 확인합니다.
+  console.log("Generated SQL Query: ", query);
 
   connection.query(query, (err, results) => {
     if (err) {
@@ -118,6 +130,7 @@ app.get("/attendancecheck", (req, res) => {
       res.status(500).send("Error fetching attendance data.");
       return;
     }
+    console.log("Fetched Attendance Data: ", results);
     res.json(results);
   });
 });
@@ -132,6 +145,7 @@ app.get("/dates", (req, res) => {
       res.status(500).send("Error fetching dates.");
       return;
     }
+    console.log("Fetched Attendance Data: ", results);
     res.json(results);
   });
 });

@@ -4,6 +4,7 @@ export interface Attendance {
   studentName: string;
   date: string;
   status: string;
+  classNum: string;
   className: string;
 }
 
